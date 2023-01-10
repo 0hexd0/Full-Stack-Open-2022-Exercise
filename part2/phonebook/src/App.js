@@ -2,20 +2,21 @@ import { useState, useEffect } from "react";
 import Filter from "./components/Filter";
 import PersonForm from "./components/PersonForm";
 import Persons from "./components/Persons";
-import axios from "axios";
+import personService from "./services/persons";
 
 const App = () => {
   const [persons, setPersons] = useState([]);
   const [searchKey, setSearchKey] = useState("");
 
-  useEffect(() => {
-    console.log("effect");
-    axios.get("http://localhost:3001/persons").then((response) => {
-      console.log("promise fulfilled");
-      setPersons(response.data);
+  const freshPersons = () => {
+    personService.getAll().then((persons) => {
+      setPersons(persons);
     });
+  };
+
+  useEffect(() => {
+    freshPersons();
   }, []);
-  console.log("render", persons.length, "persons");
 
   const handleSearchKeyChange = (event) => {
     setSearchKey(event.target.value);
@@ -37,7 +38,7 @@ const App = () => {
       <PersonForm persons={persons} setPersons={setPersons} />
 
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} />
+      <Persons persons={personsToShow} freshPersons={freshPersons} />
     </div>
   );
 };

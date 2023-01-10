@@ -1,4 +1,5 @@
 import { useState } from "react";
+import personService from "../services/persons";
 
 const PersonForm = ({ persons, setPersons }) => {
   const [newName, setNewName] = useState("");
@@ -12,31 +13,55 @@ const PersonForm = ({ persons, setPersons }) => {
     setNewNumber(event.target.value);
   };
 
-  const addName = (event) => {
+  const addPerson = (event) => {
     event.preventDefault();
+
     if (!newName || !newNumber) {
       alert("name or number can not be null");
       return;
     }
-    if (persons.find((person) => person.name === newName)) {
-      alert(`${newName} is already added to phonebook`);
+    const targetPerson = persons.find((person) => person.name === newName);
+
+    // update
+    if (targetPerson) {
+      if (
+        window.confirm(
+          `${targetPerson.name} is already added to phonebook, replace the old number with a new one?`
+        )
+      ) {
+        personService
+          .update(targetPerson.id, {
+            ...targetPerson,
+            number: newNumber,
+          })
+          .then((response) =>
+            setPersons(
+              persons.map((person) =>
+                person.id !== targetPerson.id ? person : response
+              )
+            )
+          );
+        setNewName("");
+        setNewNumber("");
+      }
+
       return;
     }
-    if (persons.find((person) => person.number === newNumber)) {
-      alert(`${newNumber} is already added to phonebook`);
-      return;
-    }
-    setPersons(
-      persons.concat({
+
+    personService
+      .create({
         name: newName,
         number: newNumber,
-        id: persons.length + 1,
       })
-    );
+      .then((returnedPersons) => {
+        setPersons(persons.concat(returnedPersons));
+        setNewName("");
+        setNewNumber("");
+      });
   };
 
   return (
-    <form onSubmit={addName}>
+    <form onSubmit={addPerson}>
       <div>
         name: <input value={newName} onChange={handleNameChange} />
       </div>
