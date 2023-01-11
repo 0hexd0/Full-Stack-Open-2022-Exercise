@@ -1,7 +1,7 @@
 import { useState } from "react";
 import personService from "../services/persons";
 
-const PersonForm = ({ persons, setPersons }) => {
+const PersonForm = ({ persons, setPersons, showMessage }) => {
   const [newName, setNewName] = useState("");
   const [newNumber, setNewNumber] = useState("");
 
@@ -20,6 +20,7 @@ const PersonForm = ({ persons, setPersons }) => {
       alert("name or number can not be null");
       return;
     }
+
     const targetPerson = persons.find((person) => person.name === newName);
 
     // update
@@ -34,15 +35,22 @@ const PersonForm = ({ persons, setPersons }) => {
             ...targetPerson,
             number: newNumber,
           })
-          .then((response) =>
+          .then((response) => {
             setPersons(
               persons.map((person) =>
                 person.id !== targetPerson.id ? person : response
               )
-            )
-          );
-        setNewName("");
-        setNewNumber("");
+            );
+            setNewName("");
+            setNewNumber("");
+            showMessage(`Added ${newName}`);
+          })
+          .catch(() => {
+            showMessage(
+              `Information of ${newName} has already been removed from server`,
+              "error"
+            );
+          });
       }
 
       return;
@@ -57,6 +65,7 @@ const PersonForm = ({ persons, setPersons }) => {
         setPersons(persons.concat(returnedPersons));
         setNewName("");
         setNewNumber("");
+        showMessage(`Added ${newName}`);
       });
   };
 
