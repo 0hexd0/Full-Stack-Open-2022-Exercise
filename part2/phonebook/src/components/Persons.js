@@ -1,11 +1,16 @@
 import personService from "../services/persons";
 
-const Persons = ({ persons, freshPersons }) => {
+const Persons = ({ persons, freshPersons, showMessage }) => {
   const deletePerson = (person) => {
     if (window.confirm(`Delete ${person.name}?`)) {
-      personService.deleteOne(person.id).then((response) => {
-        freshPersons();
-      });
+      personService
+        .deleteOne(person.id)
+        .then((response) => {
+          freshPersons();
+        })
+        .catch((error) => {
+          showMessage(error.response.data.error, "error");
+        });
     }
   };
 

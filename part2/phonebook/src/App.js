@@ -54,7 +54,11 @@ const App = () => {
       />
 
       <h3>Numbers</h3>
-      <Persons persons={personsToShow} freshPersons={freshPersons} />
+      <Persons
+        persons={personsToShow}
+        freshPersons={freshPersons}
+        showMessage={showMessage}
+      />
     </div>
   );
 };

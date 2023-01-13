@@ -45,11 +45,8 @@ const PersonForm = ({ persons, setPersons, showMessage }) => {
             setNewNumber("");
             showMessage(`Added ${newName}`);
           })
-          .catch(() => {
-            showMessage(
-              `Information of ${newName} has already been removed from server`,
-              "error"
-            );
+          .catch((error) => {
+            showMessage(error.response.data.error, "error");
           });
       }
 
@@ -66,6 +63,9 @@ const PersonForm = ({ persons, setPersons, showMessage }) => {
         setNewName("");
         setNewNumber("");
         showMessage(`Added ${newName}`);
+      })
+      .catch((error) => {
+        showMessage(error.response.data.error, "error");
       });
   };
 
